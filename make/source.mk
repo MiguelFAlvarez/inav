@@ -131,6 +131,8 @@ COMMON_SRC = \
             rx/sbus.c \
             rx/sbus_channels.c \
             rx/spektrum.c \
+            rx/srxl2.c \
+            io/spektrum_vtx_control.c \
             rx/sumd.c \
             rx/sumh.c \
             rx/uib_rx.c \
@@ -182,6 +184,7 @@ COMMON_SRC = \
             io/displayport_max7456.c \
             io/displayport_msp.c \
             io/displayport_oled.c \
+            io/displayport_srxl.c \
             io/displayport_hott.c \
             io/gps.c \
             io/gps_ublox.c \
@@ -206,6 +209,7 @@ COMMON_SRC = \
             sensors/rangefinder.c \
             sensors/opflow.c \
             telemetry/crsf.c \
+            telemetry/srxl.c \
             telemetry/frsky.c \
             telemetry/frsky_d.c \
             telemetry/hott.c \

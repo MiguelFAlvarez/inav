@@ -98,6 +98,7 @@ extern uint8_t __config_end;
 #include "rx/rx.h"
 #include "rx/spektrum.h"
 #include "rx/eleres.h"
+#include "rx/srxl2.h"
 
 #include "scheduler/scheduler.h"
 
@@ -2485,6 +2486,59 @@ static void cliEleresBind(char *cmdline)
 }
 #endif // USE_RX_ELERES
 
+#if defined(USE_RX_SPI) || defined (USE_SERIALRX_SRXL2)
+void cliRxBind(char *cmdline){
+    UNUSED(cmdline);
+    if (rxConfig()->receiverType == RX_TYPE_SERIAL) {
+        switch (rxConfig()->serialrx_provider) {
+        default:
+            cliPrint("Not supported.");
+            break;
+#if defined(USE_SERIALRX_SRXL2)
+        case SERIALRX_SRXL2:
+            srxl2Bind();
+            cliPrint("Binding SRXL2 receiver...");
+            break;
+#endif
+        }
+    } 
+#if defined(USE_RX_SPI)
+    else if (rxConfig()->receiverType == RX_TYPE_SPI) {
+        switch (rxConfig()->rx_spi_protocol) {
+        default:
+            cliPrint("Not supported.");
+            break;
+#if defined(USE_RX_FRSKY_SPI)
+#if defined(USE_RX_FRSKY_SPI_D)
+        case RX_SPI_FRSKY_D:
+#endif
+#if defined(USE_RX_FRSKY_SPI_X)
+        case RX_SPI_FRSKY_X:
+        case RX_SPI_FRSKY_X_LBT:
+#endif
+#endif // USE_RX_FRSKY_SPI
+#ifdef USE_RX_SFHSS_SPI
+        case RX_SPI_SFHSS:
+#endif
+#ifdef USE_RX_FLYSKY
+        case RX_SPI_A7105_FLYSKY:
+        case RX_SPI_A7105_FLYSKY_2A:
+#endif
+#ifdef USE_RX_SPEKTRUM
+        case RX_SPI_CYRF6936_DSM:
+#endif
+#if defined(USE_RX_FRSKY_SPI) || defined(USE_RX_SFHSS_SPI) || defined(USE_RX_FLYSKY) || defined(USE_RX_SPEKTRUM)
+            rxSpiBind();
+            cliPrint("Binding...");
+            break;
+#endif
+        }
+    
+    }
+#endif
+}
+#endif
+
 static void cliExit(char *cmdline)
 {
     UNUSED(cmdline);
@@ -3354,6 +3408,9 @@ const clicmd_t cmdTable[] = {
 #ifdef BEEPER
     CLI_COMMAND_DEF("beeper", "turn on/off beeper", "list\r\n"
             "\t<+|->[name]", cliBeeper),
+#endif
+#if defined(USE_RX_SPI) || defined (USE_SERIALRX_SRXL2)
+    CLI_COMMAND_DEF("bind_rx", "initiate binding for RX SPI or SRXL2", NULL, cliRxBind),
 #endif
 #if defined(USE_BOOTLOG)
     CLI_COMMAND_DEF("bootlog", "show boot events", NULL, cliBootlog),

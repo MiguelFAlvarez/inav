@@ -32,6 +32,7 @@
 #include "fc/config.h"
 #include "fc/runtime_config.h"
 
+#include "io/spektrum_vtx_control.h"
 #include "io/beeper.h"
 #include "io/osd.h"
 #include "io/vtx_control.h"
@@ -57,7 +58,10 @@ void vtxControlInputPoll(void)
 {
   // Check variuos input sources for VTX config updates
 
-  // XXX: None supported in INAV
+#if defined(USE_SPEKTRUM_VTX_CONTROL)
+    // Get VTX updates
+    spektrumVtxControl();
+#endif
 }
 
 static void vtxUpdateBandAndChannel(uint8_t bandStep, uint8_t channelStep)
