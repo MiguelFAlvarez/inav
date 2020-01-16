@@ -48,6 +48,7 @@
 #include "telemetry/jetiexbus.h"
 #include "telemetry/ibus.h"
 #include "telemetry/crsf.h"
+#include "telemetry/srxl.h"
 #include "telemetry/sim.h"
 
 
@@ -123,6 +124,10 @@ void telemetryInit(void)
     initCrsfTelemetry();
 #endif
 
+#ifdef USE_TELEMETRY_SRXL
+    initSrxlTelemetry();
+#endif
+
     telemetryCheckState();
 }
 
@@ -184,6 +189,10 @@ void telemetryCheckState(void)
 #if defined(USE_SERIALRX_CRSF) && defined(USE_TELEMETRY_CRSF)
     checkCrsfTelemetryState();
 #endif
+
+#ifdef USE_TELEMETRY_SRXL
+    checkSrxlTelemetryState();
+#endif
 }
 
 void telemetryProcess(timeUs_t currentTimeUs)
@@ -224,6 +233,10 @@ void telemetryProcess(timeUs_t currentTimeUs)
 
 #if defined(USE_SERIALRX_CRSF) && defined(USE_TELEMETRY_CRSF)
     handleCrsfTelemetry(currentTimeUs);
+#endif
+
+#ifdef USE_TELEMETRY_SRXL
+    handleSrxlTelemetry(currentTimeUs);
 #endif
 }
 
