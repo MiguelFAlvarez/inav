@@ -52,6 +52,42 @@ set rssi_channel = 9
 ````
 This pseudo-RSSI should work on all makes of Spektrum satellite RX; it is tested as working on Lemon RX satellites http://www.lemon-rx.com/index.php?route=product/product&path=72&product_id=109 and http://www.lemon-rx.com/index.php?route=product/product&path=72&product_id=135 (recommended).
 
+### Spektrum SRXL2
+SRXL2 provides a bidirectional link between the FC and the receiver, allowing the user to get FC telemetry data, and and interface with some basic FC settings without the need of an OSD by using the Textgen telemetry screen on the transmitter (Gen 2 airware only). It is faster than previous Remote Rx protocol, and Bidi SRXL (used by the 4649T), and also supports other features such as a instant bind command through the CLI, and vtx commands.
+
+Below are the CLI commands needed to configure the FC, as the configurator will need updates to access the settings within the GUI. This info is specific to INAV flight controllers, and may not be relevant for other flight controller setups.
+
+#### Wiring
+Signal pin on receiver (labeled "S") must be wired to UART TX pin on the FC.  
+On some F4 FC's, the TX pin might have a signal inverter (such as for S.Port). Make sure this isn't the case for the pin you intend to use.   
+Voltage can be 3.3V (4.0V for SPM4651T) to 8.4V
+
+#### Required cli settings
+```
+feature TELEMETRY
+feature -RSSI_ADC
+map TAER
+set receiver_type = SERIAL
+set serialrx_provider = SRXL2
+set serialrx_inverted = OFF
+set srxl2_unit_id = 1
+set srxl2_baud_fast = ON
+set rssi_source = PROTOCOL
+set rssi_channel = 0
+
+save
+```
+
+Note that RSSI_ADC is disabled, as this would override the value provided through SRXL2 with the analog reading from the dedicated RSSI pin on the FC. Also, rssi_channel = 0 which means its no longer used like it was in the SPM4649T. Setting these values differently could have adverse effects on RSSI readings.
+
+#### CLI Bind Command
+This command will put the receiver into bind mode without the need to reboot the FC as it was required with the spektrum_sat_bind command.
+```
+bind_rx
+```
+#### More info
+For more info on SRXL2 implementation, documentation and a library/sample code is posted here https://github.com/SpektrumRC/SRXL2
+
 ### S.BUS
 
 16 channels via serial currently supported.  See below how to set up your transmitter.
